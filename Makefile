@@ -8,14 +8,11 @@ all: help
 setup: venv  ## Setup Virtual Environment
 
 .PHONY: install-modules
-install-modules:
+install-modules: ## Install required modules (either global or venv if you are using)
 	pip install -r requirements.txt
 
-.PHONY: venv ## Setup locatl virtual environment
+.PHONY: venv
 venv: install-venv
-
-.PHONY: install-venv
-install-venv:
 	python3 -m venv venv
 
 .PHONY: help
