@@ -1,7 +1,7 @@
 [SETTINGS]
 check_interval_minutes = 15
 pushgateway = <URL to your Prometheus Pushgateway>
-log_level = DEBUG
+log_level = ERROR
 
 [API_KEYS]
 openweathermap = <your key here>

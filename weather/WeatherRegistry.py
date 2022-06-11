@@ -2,10 +2,19 @@
 Registry of available Weather Services (WeatherService objects)
 
 """
+from typing import Protocol
+
 import requests
 
 from weather.WeatherService import WeatherServiceProtocol
 from weather.WeatherUtils import TemperatureMeasurement, TemperatureUnit, convert_temperature
+
+
+class WeatherProviderProtocol(Protocol):
+    def get_temperature(
+        self, service: WeatherServiceProtocol, location_code: str
+    ) -> TemperatureMeasurement:
+        ...
 
 
 class WeatherProvider:
@@ -65,29 +74,35 @@ class WeatherServiceRegistry:
     """Registry of available Weather Services (WeatherService objects)"""
 
     def __init__(self) -> None:
-        self._services: dict[str, WeatherServiceProtocol] = {}
-        self._provider: WeatherProvider = WeatherProvider()
+        self.__services: dict[str, WeatherServiceProtocol] = {}
+        self.__provider: WeatherProviderProtocol = WeatherProvider()
 
     def register_service(self, name: str, service: WeatherServiceProtocol) -> None:
-        if self._services.get(name):
+        if self.__services.get(name):
             raise ValueError(f"Weather Service {name} already registered")
 
-        self._services[name] = service
+        self.__services[name] = service
 
     def deregister_service(self, name: str) -> None:
         try:
-            # self._services.pop(name)
-            del self._services[name]
+            # self.__services.pop(name)
+            del self.__services[name]
         except KeyError:
             pass
 
     def get_service(self, name: str) -> WeatherServiceProtocol:
-        service: WeatherServiceProtocol = self._services.get(name)  # type: ignore
+        service: WeatherServiceProtocol = self.__services.get(name)  # type: ignore
 
         if service is None:
             raise ValueError(f"Unknown Weather Service {name}")
 
         return service
 
-    def get_provider(self) -> WeatherProvider:
-        return self._provider
+    @property
+    def provider(self) -> WeatherProviderProtocol:
+        return self.__provider
+
+    @provider.setter
+    def provider(self, provider: WeatherProviderProtocol) -> None:
+        # method in case in future wish to alter/inject a different provider processor
+        self.__provider = provider

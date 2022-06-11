@@ -113,7 +113,7 @@ def poll_weather_services(
 
     registry = register_services(api_keys)
 
-    weather_provider = registry.get_provider()
+    weather_provider = registry.provider
 
     while True:
         logging.info("Gathering weather forecasts")
@@ -178,20 +178,18 @@ def main():
         if not config.has_section(section):
             raise ValueError(f'Missing config param section "[{section}]"')
 
-    log_level = logging.WARN
+    # grab and set the log level from the Config
     log_level_str = config["SETTINGS"].get("log_level")
-    if log_level_str == "DEBUG":
-        log_level = logging.DEBUG
-    elif log_level_str == "INFO":
-        log_level = logging.INFO
-    elif log_level_str == "WARN":
-        log_level = logging.WARN
-    elif log_level_str == "ERROR":
-        log_level = logging.ERROR
-    elif log_level_str == "CRITICAL":
-        log_level = logging.CRITICAL
-    elif log_level_str == "FATAL":
-        log_level = logging.FATAL
+
+    log_level_info = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "FATAL": logging.FATAL,
+    }
+
+    log_level = log_level_info.get(log_level_str, logging.WARNING)
 
     logging.basicConfig(
         level=log_level,
