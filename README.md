@@ -41,12 +41,10 @@ Place configuration settings in local **config.ini** file
   * **pushgateway** : the URL to the Prometheus pushgateway service to send metrics to
   * **log_level** : Level of logging [DEBUG, INFO, WARN, ERROR]
 <br/>
-<br/>
 
 * **[API_KEYS]** (section)
   the API keys/secrets for each service
   * **[name of service]** : <API Key/secret**>
-<br/>
 <br/>
 
 * **[LOCATIONS]** (Section):
