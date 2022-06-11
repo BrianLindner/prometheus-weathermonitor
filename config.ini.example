@@ -1,0 +1,12 @@
+[SETTINGS]
+check_interval_minutes = 15
+pushgateway = <URL to your Prometheus Pushgateway>
+log_level = DEBUG
+
+[API_KEYS]
+openweathermap = <your key here>
+weatherbit = <your key here>
+
+[LOCATIONS]
+location1 = {'name': 'Louisville, KY', 'service': 'openweathermap', 'location_code': '4299276'}
+location2 = {'name': '<loation 2 name>', 'service': '<service name>', 'location_code': '<location code>'}
