@@ -13,6 +13,9 @@ A weather monitoring service to retrieve weather data from a variety of weather 
   * [Prometheus Pushgateway](https://prometheus.io/docs/practices/pushing/)
   * [https://github.com/prometheus/pushgateway](https://github.com/prometheus/pushgateway)
 * API Keys to weather services (See [Configuration](#Configuration))
+* Python Modules (See [requirements.txt](requirements.txt) for full list)
+  * prometheus_client
+  * requests
 
 ---
 
