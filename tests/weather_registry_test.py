@@ -7,9 +7,11 @@ sys.path.insert(0, os.path.join(path, "../"))
 
 import pytest
 from weather.weather_registry import WeatherServiceRegistry
-from weather.weather_service import (OpenWeatherMapWeatherService,
-                                     WeatherBitWeatherService,
-                                     WeatherGovWeatherService)
+from weather.weather_service import (
+    OpenWeatherMapWeatherService,
+    WeatherBitWeatherService,
+    WeatherGovWeatherService,
+)
 
 
 def test_dup_service():
