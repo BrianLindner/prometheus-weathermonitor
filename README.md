@@ -2,7 +2,7 @@
 
 ## Overview
 
-A weather monitoring service to retreive weather data from a variety of weather sources and send to a Prometheus instalation via a Pushgateway
+A weather monitoring service to retrieve weather data from a variety of weather sources and send to a Prometheus instalation via a Pushgateway
 
 ---
 
