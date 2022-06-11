@@ -42,11 +42,13 @@ Place configuration settings in local **config.ini** file
   * **log_level** : Level of logging [DEBUG, INFO, WARN, ERROR]
 <br/>
 <br/>
+
 * **[API_KEYS]** (section)
   the API keys/secrets for each service
   * **[name of service]** : <API Key/secret**>
 <br/>
 <br/>
+
 * **[LOCATIONS]** (Section):
 
   A list of JSON structures denoting the indivudal locations/cities to retreive and weather for
