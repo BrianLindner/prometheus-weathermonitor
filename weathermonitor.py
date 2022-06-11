@@ -10,13 +10,13 @@ from typing import Dict, List, Optional, Tuple
 from prometheus_client import push_to_gateway  # type: ignore
 from prometheus_client import CollectorRegistry, Gauge
 
-from weather.WeatherRegistry import WeatherServiceRegistry
-from weather.WeatherService import (
+from weather.weather_registry import WeatherServiceRegistry
+from weather.weather_service import (
     OpenWeatherMapWeatherService,
     WeatherBitWeatherService,
     WeatherGovWeatherService,
 )
-from weather.WeatherUtils import TemperatureMeasurement, TemperatureUnit, convert_temperature
+from weather.weather_utils import TemperatureMeasurement, TemperatureUnit, convert_temperature
 
 
 def prometheus_temperature(

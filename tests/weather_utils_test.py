@@ -5,7 +5,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, path)
 sys.path.insert(0, os.path.join(path, "../"))
 
-from weather.WeatherUtils import TemperatureMeasurement, TemperatureUnit, convert_temperature
+from weather.weather_utils import TemperatureMeasurement, TemperatureUnit, convert_temperature
 
 
 def test_convert_C_to_F():

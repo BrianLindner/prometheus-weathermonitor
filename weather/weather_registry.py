@@ -6,8 +6,9 @@ from typing import Protocol
 
 import requests
 
-from weather.WeatherService import WeatherServiceProtocol
-from weather.WeatherUtils import TemperatureMeasurement, TemperatureUnit, convert_temperature
+from weather.weather_service import WeatherServiceProtocol
+from weather.weather_utils import (TemperatureMeasurement, TemperatureUnit,
+                                   convert_temperature)
 
 
 class WeatherProviderProtocol(Protocol):
