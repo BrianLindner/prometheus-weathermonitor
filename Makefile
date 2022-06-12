@@ -13,7 +13,7 @@ install-modules: ## Install required modules (either global or venv if you are u
 
 .PHONY: venv
 venv: install-venv
-	python3 -m venv venv
+	python3 -m venv .venv-weather
 
 .PHONY: help
 help: ## Display help information of available options

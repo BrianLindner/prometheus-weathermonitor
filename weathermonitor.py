@@ -10,13 +10,13 @@ from typing import Dict, List, Optional, Tuple
 from prometheus_client import push_to_gateway  # type: ignore
 from prometheus_client import CollectorRegistry, Gauge
 
-from weather.weather_registry import WeatherServiceRegistry
-from weather.weather_service import (
-    OpenWeatherMapWeatherService,
-    WeatherBitWeatherService,
-    WeatherGovWeatherService,
+from weather import factory
+from weather.utils import TemperatureMeasurement, TemperatureUnit, convert_temperature
+from weather.weathersource import (
+    OpenWeatherMapWeatherSource,
+    WeatherBitWeatherSource,
+    WeatherGovWeatherSource,
 )
-from weather.weather_utils import TemperatureMeasurement, TemperatureUnit, convert_temperature
 
 
 def prometheus_temperature(
@@ -86,22 +86,18 @@ def push_temperature(
     )
 
 
-def register_services(
+def register_sources(
     api_keys: Dict[str, str],
-) -> WeatherServiceRegistry:
-    registry = WeatherServiceRegistry()
-
-    registry.register_service(
-        "weather.gov", WeatherGovWeatherService(api_key=api_keys.get("weather.gov"))  # type: ignore
+) -> None:
+    factory.register_source(
+        "weather.gov", WeatherGovWeatherSource(api_key=api_keys.get("weather.gov"))  # type: ignore
     )
-    registry.register_service(
-        "openweathermap", OpenWeatherMapWeatherService(api_key=api_keys.get("openweathermap"))  # type: ignore
+    factory.register_source(
+        "openweathermap", OpenWeatherMapWeatherSource(api_key=api_keys.get("openweathermap"))  # type: ignore
     )
-    registry.register_service(
-        "weatherbit", WeatherBitWeatherService(api_key=api_keys.get("weatherbit"))  # type: ignore
+    factory.register_source(
+        "weatherbit", WeatherBitWeatherSource(api_key=api_keys.get("weatherbit"))  # type: ignore
     )
-
-    return registry
 
 
 def poll_weather_services(
@@ -111,9 +107,9 @@ def poll_weather_services(
     poll_interval: int = 15,
 ) -> None:
 
-    registry = register_services(api_keys)
+    register_sources(api_keys)
 
-    weather_provider = registry.provider
+    weather_provider = factory.provider()
 
     while True:
         logging.info("Gathering weather forecasts")
@@ -129,28 +125,28 @@ def poll_weather_services(
             # location: Dict[str, str] = json.loads(location_info)
             location = ast.literal_eval(location_info)
 
-            service_name = location["service"]
+            source_name = location["service"]
             location_code = location["location_code"]
             location_name = location["name"]
 
-            weather_service = registry.get_service(service_name)
+            weather_source = factory.source(source_name)
 
             try:
 
-                temperature = weather_provider.get_temperature(weather_service, location_code)
-                logmsg = f'Weather Service: "{weather_service.name}" Location: "{location_name}" Temp: {convert_temperature(temperature, TemperatureUnit.FAHRENHEIT)}'
+                temperature = weather_provider.temperature(weather_source, location_code)
+                logmsg = f'Weather Source: "{weather_source.name}" Location: "{location_name}" Temp: {convert_temperature(temperature, TemperatureUnit.FAHRENHEIT)}'
                 logging.debug(logmsg)
 
                 if temperature:
                     push_temperature(
                         pushgateway_url=pushgateway_url,
                         temperature=temperature,
-                        weather_service=service_name,
+                        weather_service=source_name,
                         location_name=location_name,
                     )
 
                 else:
-                    logmsg = f"no temperature returned - Service: {weather_service} | Location: {location_name}"
+                    logmsg = f"no temperature returned - Source: {weather_source} | Location: {location_name}"
                     logging.warning(logmsg)
             except ConnectionRefusedError as cre:
                 logmsg = f"get_temperature raised ConnectionRefusedError: {cre}"

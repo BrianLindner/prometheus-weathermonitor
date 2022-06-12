@@ -22,7 +22,7 @@ class TemperatureMeasurement:
     unit: TemperatureUnit
 
     def __repr__(self) -> str:
-        return str(self.value) + str(self.unit)
+        return f"{self.value} {self.unit.value}"
 
 
 def convert_temperature(

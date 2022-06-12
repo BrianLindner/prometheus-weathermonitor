@@ -6,22 +6,22 @@ from typing import Protocol
 
 import requests
 
-from weather.weather_utils import TemperatureMeasurement, TemperatureUnit
+from weather.utils import TemperatureMeasurement, TemperatureUnit
 
 
-class WeatherServiceProtocol(Protocol):
-    def service_url(self, location_code: str) -> str:
+class WeatherSourceProtocol(Protocol):
+    @property
+    def name(self) -> str:
+        ...
+
+    def formatted_url(self, location_code: str) -> str:
         ...
 
     def extract_temperature(self, result: requests.Response) -> TemperatureMeasurement:
         ...
 
-    @property
-    def name(self) -> str:
-        ...
 
-
-class WeatherGovWeatherService:
+class WeatherGovWeatherSource:
     """Weather service class for Weather.gov
 
     implementation of the WeatherService protocol"""
@@ -37,7 +37,7 @@ class WeatherGovWeatherService:
     def name(self) -> str:
         return self._name
 
-    def service_url(self, location_code: str) -> str:
+    def formatted_url(self, location_code: str) -> str:
         return self._url_pattern.format(location_code=location_code)
 
     def extract_temperature(self, result: requests.Response) -> TemperatureMeasurement:
@@ -56,7 +56,7 @@ class WeatherGovWeatherService:
         return TemperatureMeasurement(temperature, temperatureUnit)
 
 
-class OpenWeatherMapWeatherService:
+class OpenWeatherMapWeatherSource:
     """Weather service class for OpenWeatherMap
 
     implementation of the WeatherService protocol"""
@@ -73,7 +73,7 @@ class OpenWeatherMapWeatherService:
     def name(self) -> str:
         return self._name
 
-    def service_url(self, location_code: str) -> str:
+    def formatted_url(self, location_code: str) -> str:
         return self._url_pattern.format(location_code=location_code, api_key=self.api_key)
 
     def extract_temperature(self, result: requests.Response) -> TemperatureMeasurement:
@@ -83,7 +83,7 @@ class OpenWeatherMapWeatherService:
         return TemperatureMeasurement(temperature, temperatureUnit)
 
 
-class WeatherBitWeatherService:
+class WeatherBitWeatherSource:
     """Weather service class for Weatherbit
 
     implementation of the WeatherService protocol"""
@@ -100,7 +100,7 @@ class WeatherBitWeatherService:
     def name(self) -> str:
         return self._name
 
-    def service_url(self, location_code: str) -> str:
+    def formatted_url(self, location_code: str) -> str:
         return self._url_pattern.format(location_code=location_code, api_key=self.api_key)
 
     def extract_temperature(self, result: requests.Response) -> TemperatureMeasurement:

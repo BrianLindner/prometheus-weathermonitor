@@ -1,2 +1,2 @@
-requests
-prometheus_client
+prometheus-client>=0.14
+requests>=2.28
