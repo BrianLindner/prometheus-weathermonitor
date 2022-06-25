@@ -10,13 +10,9 @@ from typing import Dict, List, Optional, Tuple
 from prometheus_client import push_to_gateway  # type: ignore
 from prometheus_client import CollectorRegistry, Gauge
 
-from weather import factory
+from weather import factory as weatherfactory
 from weather.utils import TemperatureMeasurement, TemperatureUnit, convert_temperature
-from weather.weathersource import (
-    OpenWeatherMapWeatherSource,
-    WeatherBitWeatherSource,
-    WeatherGovWeatherSource,
-)
+from weather.weathersource import OpenWeatherMapSource, WeatherBitSource, WeatherGovSource
 
 
 def prometheus_temperature(
@@ -89,14 +85,14 @@ def push_temperature(
 def register_sources(
     api_keys: Dict[str, str],
 ) -> None:
-    factory.register_source(
-        "weather.gov", WeatherGovWeatherSource(api_key=api_keys.get("weather.gov"))  # type: ignore
+    weatherfactory.register_source(
+        "weather.gov", WeatherGovSource(api_key=api_keys.get("weather.gov"))  # type: ignore
     )
-    factory.register_source(
-        "openweathermap", OpenWeatherMapWeatherSource(api_key=api_keys.get("openweathermap"))  # type: ignore
+    weatherfactory.register_source(
+        "openweathermap", OpenWeatherMapSource(api_key=api_keys.get("openweathermap"))  # type: ignore
     )
-    factory.register_source(
-        "weatherbit", WeatherBitWeatherSource(api_key=api_keys.get("weatherbit"))  # type: ignore
+    weatherfactory.register_source(
+        "weatherbit", WeatherBitSource(api_key=api_keys.get("weatherbit"))  # type: ignore
     )
 
 
@@ -106,13 +102,14 @@ def poll_weather_services(
     pushgateway_url: str,
     poll_interval: int = 15,
 ) -> None:
+    logger = logging.getLogger(__name__)
 
     register_sources(api_keys)
 
-    weather_provider = factory.provider()
+    weather_provider = weatherfactory.provider()
 
     while True:
-        logging.info("Gathering weather forecasts")
+        logger.info("Gathering weather forecasts")
         # default wait time between weather lookups
         sleep_minutes = poll_interval
 
@@ -129,13 +126,12 @@ def poll_weather_services(
             location_code = location["location_code"]
             location_name = location["name"]
 
-            weather_source = factory.source(source_name)
+            weather_source = weatherfactory.source(source_name)
 
             try:
-
                 temperature = weather_provider.temperature(weather_source, location_code)
                 logmsg = f'Weather Source: "{weather_source.name}" Location: "{location_name}" Temp: {convert_temperature(temperature, TemperatureUnit.FAHRENHEIT)}'
-                logging.debug(logmsg)
+                logger.debug(logmsg)
 
                 if temperature:
                     push_temperature(
@@ -144,23 +140,22 @@ def poll_weather_services(
                         weather_service=source_name,
                         location_name=location_name,
                     )
-
                 else:
                     logmsg = f"no temperature returned - Source: {weather_source} | Location: {location_name}"
-                    logging.warning(logmsg)
+                    logger.warning(logmsg)
             except ConnectionRefusedError as cre:
                 logmsg = f"get_temperature raised ConnectionRefusedError: {cre}"
-                logging.warning(logmsg)
+                logger.warning(logmsg)
             except ProcessLookupError as ple:
                 logmsg = f"get_temperature raised ProcessLookupError: {ple}"
-                logging.warning(logmsg)
+                logger.warning(logmsg)
                 # set a retry for the service loop
-                logging.warning("retry attempt adjustment")
+                logger.warning("retry attempt adjustment")
                 sleep_minutes = round(poll_interval / 2, 0)
 
         # wait to call services again
         logmsg = f"sleeping {sleep_minutes} minutes"
-        logging.info(logmsg)
+        logger.info(logmsg)
         time.sleep(sleep_minutes * 60)
 
 
@@ -188,6 +183,7 @@ def main():
     log_level = log_level_info.get(log_level_str, logging.WARNING)
 
     logging.basicConfig(
+        filename="logs/weathermonitor.log",
         level=log_level,
         format="%(asctime)s %(levelname)s:%(message)s",
         datefmt="%Y-%m-%d %I:%M:%S %p",

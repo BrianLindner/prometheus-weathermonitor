@@ -1,9 +1,9 @@
-import os
-import sys
+# import os
+# import sys
 
-path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, path)
-sys.path.insert(0, os.path.join(path, "../"))
+# path = os.path.dirname(os.path.abspath(__file__))
+# sys.path.insert(0, path)
+# sys.path.insert(0, os.path.join(path, "../"))
 
 import pytest
 from weather import factory
@@ -18,7 +18,7 @@ def test_cant_have_duplicate():
         factory.register_provider("new provider", WeatherProvider())
 
 
-def test_replace_default():
+def test_replace_default_no_exception():
 
     factory.register_provider("default", WeatherProvider())
 

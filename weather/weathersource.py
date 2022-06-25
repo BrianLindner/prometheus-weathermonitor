@@ -21,7 +21,7 @@ class WeatherSourceProtocol(Protocol):
         ...
 
 
-class WeatherGovWeatherSource:
+class WeatherGovSource:
     """Weather service class for Weather.gov
 
     implementation of the WeatherService protocol"""
@@ -56,7 +56,7 @@ class WeatherGovWeatherSource:
         return TemperatureMeasurement(temperature, temperatureUnit)
 
 
-class OpenWeatherMapWeatherSource:
+class OpenWeatherMapSource:
     """Weather service class for OpenWeatherMap
 
     implementation of the WeatherService protocol"""
@@ -83,7 +83,7 @@ class OpenWeatherMapWeatherSource:
         return TemperatureMeasurement(temperature, temperatureUnit)
 
 
-class WeatherBitWeatherSource:
+class WeatherBitSource:
     """Weather service class for Weatherbit
 
     implementation of the WeatherService protocol"""
